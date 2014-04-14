@@ -30,31 +30,6 @@ class DataCollector():
 
         self.points = np.array(self.points)
 
-    def render_over_image(self, input_img):
-        """
-            Method render a shape described with landmarks over the input image
-
-            params:
-
-                input_img = image to render on, loaded with OpenCV
-        """
-
-        for i in range(len(self.points) - 1):
-            #input_img[self.points[i, 0], self.points[i, 1], 1] = 255
-            cv2.line(input_img, (int(self.points[i, 1]), int(self.points[i, 0])),
-                     (int(self.points[i+1, 1]),  int(self.points[i+1, 0])), (0, 255, 0))
-
-        height = 500
-        scale = height / float(input_img.shape[0])
-        window_width = int(input_img.shape[1] * scale)
-        window_height = int(input_img.shape[0] * scale)
-
-        cv2.namedWindow('rendered image', cv2.WINDOW_NORMAL)
-        cv2.resizeWindow('rendered image', window_width, window_height)
-        cv2.imshow('rendered image', input_img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
     def as_vector(self):
         """
             return points as [x_1,y_1, ..., x_n, y_n]
