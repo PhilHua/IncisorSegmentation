@@ -50,3 +50,17 @@ Tim Cootes : An Introduction to Active Shape Models (Chapter 7 from Ed.R.Baldock
  address = {New York, NY, USA},
  keywords = {Robust point matching (RPM), Thin-plate splines (TPS), brain mapping, correspondence, feature-based, linear assignment, non-rigid mapping, outlier rejection, permutation matrix, registration, softassign},
 }
+
+@MISC{Cootes00statisticalmodels,
+    author = {T.F. Cootes and C.J. Taylor},
+    title = {Statistical Models of Appearance for Computer Vision},
+    year = {2000}
+}
+
+@MISC{Dighe12preprocessing,segmentation,
+    author = {Shubhangi Dighe and Revati Shriram},
+    title = {Preprocessing, Segmentation and Matching of Dental Radiographs used in Dental Biometrics},
+    year = {2012}
+}
+
+
