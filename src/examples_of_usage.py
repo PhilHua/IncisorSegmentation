@@ -44,16 +44,18 @@ def example_scaling_to_unit_and_back():
     print tmpObj.points
     print "*" * 50
     tmpObj.scale_to_unit()
+    #DataManipulations.Plotter.render_landmarks(tmpObj)
     tmpObj.rescale()
     print tmpObj.points
 
 
 def example_rotating_landmarks():
-    tmpObj = DataManipulations.DataCollector('../data/Landmarks/original/landmarks1-4.txt')
+    tmpObj = DataManipulations.DataCollector('../data/Landmarks/original/landmarks1-1.txt')
     DataManipulations.Plotter.render_landmarks(tmpObj)
 
     tmpObj.rotate(1)
     DataManipulations.Plotter.render_landmarks(tmpObj)
 
 
-example_rotating_landmarks()
+#example_rotating_landmarks()
+example_scaling_to_unit_and_back()

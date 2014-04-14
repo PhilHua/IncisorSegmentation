@@ -3,7 +3,6 @@ __author__ = 'Sebastijan'
 import cv2
 import os
 import fnmatch
-import math
 import numpy as np
 
 
@@ -22,6 +21,7 @@ class DataCollector():
         self.centroid = None
         self._update_centroid(weights=None)
         self.scales = []
+        self.scale_factor = None
 
     def _read_landmarks(self, input_file):
         """
@@ -117,19 +117,19 @@ class DataCollector():
         """
             Method scales each landmark point to the unit distance from the origin
         """
-        for i in range(len(self.points)):
-            tmp_scale = sum([(x - y) ** 2 for x, y in zip(self.points[i, :], self.centroid.tolist())])
-            tmp_scale = math.sqrt(float(tmp_scale) / len(self.centroid))
-            self.scales.append(tmp_scale)
-            self.points[i, :] = self.points[i, :].dot(1. / tmp_scale)
+        self.scale_factor = self.points - self.centroid
+        self.scale_factor = np.power(self.scale_factor, 2)
+        self.scale_factor = self.scale_factor.dot(1. / len(self.points))
+        self.scale_factor = self.scale_factor.sum()
+
+        self.points = self.points.dot(1. / self.scale_factor)
 
     def rescale(self):
         """
             Methods rescales each landmark point to it's original distance
         """
 
-        for i in range(len(self.scales)):
-            self.points[i, :] = self.points[i, :] * self.scales[i]
+        self.points = self.points.dot(self.scale_factor)
 
     def rotate(self, angle):
         """
