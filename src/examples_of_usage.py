@@ -12,7 +12,7 @@ def example_reading_landmarks_and_display_shape():
 
 
 def example_read_landmarks_and_plot_over_original_image():
-    TmpObj = DataManipulations.DataCollector('../data/Landmarks/original/landmarks1-1.txt')
+    TmpObj = DataManipulations.DataCollector('../data/Landmarks/original/landmarks1-4.txt')
     img = cv2.imread('../data/Radiographs/01.tif')
     DataManipulations.Plotter.render_over_image(TmpObj, img)
 
@@ -46,3 +46,14 @@ def example_scaling_to_unit_and_back():
     tmpObj.scale_to_unit()
     tmpObj.rescale()
     print tmpObj.points
+
+
+def example_rotating_landmarks():
+    tmpObj = DataManipulations.DataCollector('../data/Landmarks/original/landmarks1-4.txt')
+    DataManipulations.Plotter.render_landmarks(tmpObj)
+
+    tmpObj.rotate(1)
+    DataManipulations.Plotter.render_landmarks(tmpObj)
+
+
+example_rotating_landmarks()

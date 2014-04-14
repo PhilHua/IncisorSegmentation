@@ -4,7 +4,6 @@ import cv2
 import os
 import fnmatch
 import math
-
 import numpy as np
 
 
@@ -131,6 +130,14 @@ class DataCollector():
 
         for i in range(len(self.scales)):
             self.points[i, :] = self.points[i, :] * self.scales[i]
+
+    def rotate(self, angle):
+        """
+            Method rotates each landmark point for a given angle
+        """
+        rot_matrix = np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]])
+        for ind in range(len(self.points)):
+            self.points[ind, :] = self.points[ind, :].dot(rot_matrix)
 
 
 class Plotter():
