@@ -57,6 +57,40 @@ class DataCollector():
         self.points[:, 0] = data_vector[range(0, len(data_vector), 2)]
         self.points[:, 1] = data_vector[range(1, len(data_vector), 2)]
 
+    def read_points(self, points):
+        """
+            Method reads point in a matrix format [[y_1, x_1], [y_2, x_2], ..., [y_n, x_n]]
+        """
+        self.points = points
+
+    def translate_to_origin(self, weights=None):
+        """
+            Method translates the points so that centroid is in the origin [0, 0]
+
+            params:
+                weights : (1, num_points) numpy array of weights
+                        -- if None, arithmetic mean is calculated
+        """
+        if weights is None:
+            centroid = np.mean(self.points, axis=0)
+        else:
+            centroid = np.zeros((1, len(self.points[0])))
+            for ind in range(len(weights)):
+                centroid += self.points[ind, :] * weights[ind]
+
+        print centroid
+        self.points = self.points - centroid
+
+    def translate_to_reference(self, reference_centroid):
+        """
+            Method translates the points for a given centroid
+
+            params:
+                reference_centroid : (1, num_dims) numpy array of centroid
+        """
+
+        self.points = self.points - reference_centroid
+
 
 class Plotter():
     def __init__(self):

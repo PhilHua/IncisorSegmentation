@@ -63,8 +63,41 @@ class ReferentModel():
 
         return weights
 
+    def _convert_matrix_to_collection(self):
+        """
+            Method converts the points given in matrix format to a list of DataCollector objects (easier to manipulate )
+        """
+
+        collection = []
+        for ind in range(len(self.points)):
+            tmp = DataManipulations.DataCollector(None)
+            tmp.read_vector(self.points[ind, :])
+
+            collection.append(tmp)
+
+        self.points = collection
+
+    def _convert_collection_to_matrix(self):
+        """
+            Method converts the points given as DataCollector objects to a matrix form
+        """
+
+        collection = []
+        for item in self.points:
+            collection.append(item.as_vector())
+
+        self.points = np.array(collection)
+
     def align(self):
         """
-            Method implements the alignment of landmarks based on the Procrustes analysis
+            Method implements the alignment of landmarks based on Generalized Procrustes analysis
+
+            Notes:
+                -- weighted mean is calculated when needed, not just arithmetic mean
         """
         weights = self._calculate_weights()
+        self._convert_matrix_to_collection()
+
+        #translating points to the origin to avoid need for translation
+        for item in self.points:
+            item.translate_to_origin()
