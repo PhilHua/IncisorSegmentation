@@ -3,6 +3,7 @@ __author__ = 'Sebastijan'
 import cv2
 import os
 import fnmatch
+import math
 
 import numpy as np
 
@@ -20,6 +21,8 @@ class DataCollector():
         if input_file is not None:
             self._read_landmarks(input_file)
         self.centroid = None
+        self._update_centroid(weights=None)
+        self.scales = []
 
     def _read_landmarks(self, input_file):
         """
@@ -47,7 +50,7 @@ class DataCollector():
         """
         return self.points
 
-    def read_vector(self, data_vector):
+    def read_vector(self, data_vector, weights=None):
         """
             Read vector of point and store it in self.points
 
@@ -57,20 +60,25 @@ class DataCollector():
         self.points = np.zeros((len(data_vector) / 2, 2))
         self.points[:, 0] = data_vector[range(0, len(data_vector), 2)]
         self.points[:, 1] = data_vector[range(1, len(data_vector), 2)]
+        self._update_centroid(weights=weights)
 
-    def read_points(self, points):
+    def read_points(self, points, weights=None):
         """
             Method reads point in a matrix format [[y_1, x_1], [y_2, x_2], ..., [y_n, x_n]]
         """
         self.points = points
+        self._update_centroid(weights=weights)
 
-    def _update_centroid(self, weights):
-
+    def _update_centroid(self, weights=None):
+        """
+            Method updates the centroid
+            -- used after translating the points' centroid to the origin
+        """
         if weights is None:
             self.centroid = np.mean(self.points, axis=0)
         else:
             self.centroid = np.zeros((1, len(self.points[0])))
-            for ind in range(len(weights)):
+            for ind in range(len(self.points)):
                 self.centroid += self.points[ind, :] * weights[ind]
 
     def translate_to_origin(self, weights=None):
@@ -87,13 +95,15 @@ class DataCollector():
             centroid = np.zeros((1, len(self.points[0])))
             for ind in range(len(weights)):
                 centroid += self.points[ind, :] * weights[ind]
+                #in case when sum of weights doesn't correspond to 1
+            centroid = centroid.dot(1. / weights.sum())
 
         self.points = self.points - centroid
 
         #update_centroid
-        self._update_centroid()
+        self._update_centroid(weights=weights)
 
-    def translate_to_reference(self, reference_centroid):
+    def translate_to_reference(self, reference_centroid, weights=None):
         """
             Method translates the points for a given centroid
 
@@ -102,7 +112,25 @@ class DataCollector():
         """
 
         self.points = self.points - reference_centroid
-        self._update_centroid()
+        self._update_centroid(weights=weights)
+
+    def scale_to_unit(self):
+        """
+            Method scales each landmark point to the unit distance from the origin
+        """
+        for i in range(len(self.points)):
+            tmp_scale = sum([(x - y) ** 2 for x, y in zip(self.points[i, :], self.centroid.tolist())])
+            tmp_scale = math.sqrt(float(tmp_scale) / len(self.centroid))
+            self.scales.append(tmp_scale)
+            self.points[i, :] = self.points[i, :].dot(1. / tmp_scale)
+
+    def rescale(self):
+        """
+            Methods rescales each landmark point to it's original distance
+        """
+
+        for i in range(len(self.scales)):
+            self.points[i, :] = self.points[i, :] * self.scales[i]
 
 
 class Plotter():

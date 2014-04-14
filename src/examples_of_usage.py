@@ -1,7 +1,7 @@
 __author__ = 'Sebastijan'
 
 import cv2
-
+import numpy
 import DataManipulations
 import ActiveShapeModel
 
@@ -30,3 +30,19 @@ def example_calculate_mean_image_and_display():
     data_coll.read_vector(referent.mean_model())
 
     DataManipulations.Plotter.render_landmarks(data_coll)
+
+
+def example_translate_to_origin():
+    tmpObj = DataManipulations.DataCollector('../data/Landmarks/original/landmarks1-1.txt')
+    print numpy.mean(tmpObj.points, axis=0)
+    tmpObj.translate_to_origin()
+    print tmpObj.centroid
+
+
+def example_scaling_to_unit_and_back():
+    tmpObj = DataManipulations.DataCollector('../data/Landmarks/original/landmarks1-1.txt')
+    print tmpObj.points
+    print "*" * 50
+    tmpObj.scale_to_unit()
+    tmpObj.rescale()
+    print tmpObj.points

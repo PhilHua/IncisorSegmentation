@@ -101,3 +101,7 @@ class ReferentModel():
         #translating points to the origin to avoid need for translation
         for item in self.points:
             item.translate_to_origin()
+
+        #scale points to unit distance
+        for item in self.points:
+            item.scale_to_unit()
