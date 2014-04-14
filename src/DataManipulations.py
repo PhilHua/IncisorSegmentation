@@ -8,7 +8,6 @@ import numpy as np
 
 
 class DataCollector():
-
     def __init__(self, input_file):
         """
             Class containing description of the ground truth (landmarks) and functionalities regarding that
@@ -28,7 +27,7 @@ class DataCollector():
         tmp = open(input_file).readlines()
 
         for ind in range(0, len(tmp), 2):
-            self.points.append(np.array([float(tmp[ind+1].strip()), float(tmp[ind].strip())]))
+            self.points.append(np.array([float(tmp[ind + 1].strip()), float(tmp[ind].strip())]))
 
         self.points = np.array(self.points)
 
@@ -54,13 +53,12 @@ class DataCollector():
             params:
                 data_vector = vector of points in OpenCV mapping style [y_1, x_1, ..., y_n, x_n], numpy array
         """
-        self.points = np.zeros((len(data_vector)/2, 2))
+        self.points = np.zeros((len(data_vector) / 2, 2))
         self.points[:, 0] = data_vector[range(0, len(data_vector), 2)]
         self.points[:, 1] = data_vector[range(1, len(data_vector), 2)]
 
 
 class Plotter():
-
     def __init__(self):
         """
             Class implementing plotter functionality for visualization of landmark points
@@ -78,7 +76,7 @@ class Plotter():
         max_x = points[:, 1].max()
         min_x = points[:, 1].min()
 
-        img = np.zeros((int((max_y - min_y)*1.1), int((max_x - min_x)*1.1)))
+        img = np.zeros((int((max_y - min_y) * 1.1), int((max_x - min_x) * 1.1)))
 
         for i in range(len(points)):
             img[points[i, 0] - min_y, points[i, 1] - min_x] = 1
@@ -100,7 +98,7 @@ class Plotter():
         for i in range(len(points) - 1):
             #input_img[self.points[i, 0], self.points[i, 1], 1] = 255
             cv2.line(img, (int(points[i, 1]), int(points[i, 0])),
-                     (int(points[i+1, 1]),  int(points[i+1, 0])), (0, 255, 0))
+                     (int(points[i + 1, 1]), int(points[i + 1, 0])), (0, 255, 0))
 
         height = 500
         scale = height / float(img.shape[0])
@@ -132,4 +130,3 @@ def collect_vectors(input_folder, tooth_number, dims):
         res_matrix[i, :] = tmp_obj.as_vector()
 
     return res_matrix
-
