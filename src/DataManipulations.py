@@ -17,7 +17,8 @@ class DataCollector():
             Convention for points (vertical, horizontal) -- as mapping for OpenCV
         """
         self.points = []
-        self._read_landmarks(input_file)
+        if input_file is not None:
+            self._read_landmarks(input_file)
 
     def _read_landmarks(self, input_file):
         """
@@ -44,6 +45,17 @@ class DataCollector():
             return points as matrix (height, width)
         """
         return self.points
+
+    def read_vector(self, data_vector):
+        """
+            Read vector of point and store it in self.points
+
+            params:
+                data_vector = vector of points in OpenCV mapping style [y_1, x_1, ..., y_n, x_n], numpy array
+        """
+        self.points = np.zeros((len(data_vector)/2, 2))
+        self.points[:, 0] = data_vector[range(0, len(data_vector), 2)]
+        self.points[:, 1] = data_vector[range(1, len(data_vector), 2)]
 
 
 class Plotter():

@@ -2,6 +2,7 @@ __author__ = 'Sebastijan'
 
 import DataManipulations
 import cv2
+import ActiveShapeModel
 
 
 def example_reading_landmarks_and_display_shape():
@@ -21,4 +22,12 @@ def example_collect_landmarks_from_multiple_teeth():
     res = DataManipulations.collect_vectors('../data/Landmarks/original', '1', 80)
     print res
 
-example_read_landmarks_and_plot_over_original_image()
+
+def example_calculate_mean_image_and_display():
+    res = DataManipulations.collect_vectors('../data/Landmarks/original', '1', 80)
+    referent = ActiveShapeModel.ReferentModel(res)
+    data_coll = DataManipulations.DataCollector(None)
+    res = referent.mean_model()
+    data_coll.read_vector(referent.mean_model())
+
+    DataManipulations.Plotter.render_landmarks(data_coll)
