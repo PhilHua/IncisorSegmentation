@@ -1,16 +1,17 @@
 __author__ = 'Sebastijan'
 
 import cv2
-import numpy as np
 import os
 import fnmatch
+
+import numpy as np
 
 
 class DataCollector():
 
     def __init__(self, input_file):
         """
-            Class containing description of the ground truth (landmarks)
+            Class containing description of the ground truth (landmarks) and functionalities regarding that
 
             file : file containing the landmarks
 
