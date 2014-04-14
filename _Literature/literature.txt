@@ -1,0 +1,52 @@
+Literature used for the implementation:
+
+Tim Cootes : An Introduction to Active Shape Models (Chapter 7 from Ed.R.Baldock and J.Graham : "Image Processing and Analysis",
+                                                     Oxford University Press, 2000, p.223-248)
+
+
+@article{Cootes:1995:ASM:206543.206547,
+ author = {Cootes, T. F. and Taylor, C. J. and Cooper, D. H. and Graham, J.},
+ title = {Active Shape Models\&Mdash;Their Training and Application},
+ journal = {Comput. Vis. Image Underst.},
+ issue_date = {Jan. 1995},
+ volume = {61},
+ number = {1},
+ month = jan,
+ year = {1995},
+ issn = {1077-3142},
+ pages = {38--59},
+ numpages = {22},
+ url = {http://dx.doi.org/10.1006/cviu.1995.1004},
+ doi = {10.1006/cviu.1995.1004},
+ acmid = {206547},
+ publisher = {Elsevier Science Inc.},
+ address = {New York, NY, USA},
+}
+
+@INPROCEEDINGS{Blanz04astatistical,
+    author = {V. Blanz and A. Mehl and T. Vetter and H. -p. Seidel},
+    title = {A statistical method for robust 3D surface reconstruction from sparse data},
+    booktitle = {In Int. Symp. on 3D Data Processing, Visualization and Transmission},
+    year = {2004},
+    pages = {293--300}
+}
+
+@article{Chui:2003:NPM:941103.941105,
+ author = {Chui, Haili and Rangarajan, Anand},
+ title = {A New Point Matching Algorithm for Non-rigid Registration},
+ journal = {Comput. Vis. Image Underst.},
+ issue_date = {February 2003},
+ volume = {89},
+ number = {2-3},
+ month = feb,
+ year = {2003},
+ issn = {1077-3142},
+ pages = {114--141},
+ numpages = {28},
+ url = {http://dx.doi.org/10.1016/S1077-3142(03)00009-2},
+ doi = {10.1016/S1077-3142(03)00009-2},
+ acmid = {941105},
+ publisher = {Elsevier Science Inc.},
+ address = {New York, NY, USA},
+ keywords = {Robust point matching (RPM), Thin-plate splines (TPS), brain mapping, correspondence, feature-based, linear assignment, non-rigid mapping, outlier rejection, permutation matrix, registration, softassign},
+}

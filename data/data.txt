@@ -1,0 +1,5 @@
+Data used for the project is the property of KU Leuven and not publicly available, only examples are demonstrated here.
+
+Folder Landmarks contains .txt files with landmark point for each tooth.
+Folder Radiographs contains radiological images of teeth.
+Folder Segmentations contains correctly segmented images.
