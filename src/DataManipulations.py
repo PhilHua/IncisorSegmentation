@@ -19,6 +19,7 @@ class DataCollector():
         self.points = []
         if input_file is not None:
             self._read_landmarks(input_file)
+        self.centroid = None
 
     def _read_landmarks(self, input_file):
         """
@@ -63,6 +64,15 @@ class DataCollector():
         """
         self.points = points
 
+    def _update_centroid(self, weights):
+
+        if weights is None:
+            self.centroid = np.mean(self.points, axis=0)
+        else:
+            self.centroid = np.zeros((1, len(self.points[0])))
+            for ind in range(len(weights)):
+                self.centroid += self.points[ind, :] * weights[ind]
+
     def translate_to_origin(self, weights=None):
         """
             Method translates the points so that centroid is in the origin [0, 0]
@@ -78,8 +88,10 @@ class DataCollector():
             for ind in range(len(weights)):
                 centroid += self.points[ind, :] * weights[ind]
 
-        print centroid
         self.points = self.points - centroid
+
+        #update_centroid
+        self._update_centroid()
 
     def translate_to_reference(self, reference_centroid):
         """
@@ -90,6 +102,7 @@ class DataCollector():
         """
 
         self.points = self.points - reference_centroid
+        self._update_centroid()
 
 
 class Plotter():
