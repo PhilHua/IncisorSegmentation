@@ -18,5 +18,10 @@ class ReferentModel():
         """
             Method calculates mean model from self.points
         """
-
         return np.mean(self.points, axis=0)
+
+    def align(self):
+        """
+            Method implements the alignment of landmarks based on ???
+        """
+        pass
