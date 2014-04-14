@@ -2,6 +2,7 @@ __author__ = 'Sebastijan'
 
 import numpy as np
 
+
 class ReferentModel():
 
     def __init__(self, points):
