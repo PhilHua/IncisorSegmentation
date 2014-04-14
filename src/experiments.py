@@ -2,7 +2,9 @@ __author__ = 'Sebastijan'
 
 
 import DataManipulations
-import cv2
+import ActiveShapeModel
 
 res = DataManipulations.collect_vectors('../data/Landmarks/original', '1', 80)
-print res
+
+referent = ActiveShapeModel.ReferentModel(res)
+referent.align()

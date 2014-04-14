@@ -111,6 +111,41 @@ class Plotter():
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+    @staticmethod
+    def render_multiple_landmarks(matrix):
+        """
+            Method plots multiple landmark points to the same image
+
+            params:
+                matrix : a matrix where each row represents a landmark point [y_1, x_1, ..., y_n, x_n]
+
+            TODO : not fully functional yet, problems with positioning of each tooth
+        """
+
+        collector = DataCollector(None)
+
+        # window initialization
+        collector.read_vector(matrix[0, :])
+        points = collector.as_matrix()
+        max_y = points[:, 0].max()
+        min_y = points[:, 0].min()
+        max_x = points[:, 1].max()
+        min_x = points[:, 1].min()
+
+        img = np.zeros((int((max_y - min_y) * 1.1), int((max_x - min_x) * 1.1)))
+
+        #plot each point
+        for ind in range(len(matrix)):
+
+            collector.read_vector(matrix[ind, :])
+            points = collector.as_matrix()
+
+            for i in range(len(points)):
+                img[points[i, 0] - min_y, points[i, 1] - min_x] = 1
+
+        cv2.imshow('Rendered shape', img)
+        cv2.waitKey(0)
+
 
 def collect_vectors(input_folder, tooth_number, dims):
     """
