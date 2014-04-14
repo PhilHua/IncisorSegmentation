@@ -135,7 +135,8 @@ class DataCollector():
         """
             Method rotates each landmark point for a given angle
         """
-        rot_matrix = np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]])
+        # rotation matrix, adapted to the (y, x) convention (height, width)
+        rot_matrix = np.array([[np.cos(angle), np.sin(angle)], [-np.sin(angle), np.cos(angle)]])
         for ind in range(len(self.points)):
             self.points[ind, :] = self.points[ind, :].dot(rot_matrix)
 

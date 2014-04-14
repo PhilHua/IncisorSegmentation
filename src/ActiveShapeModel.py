@@ -15,6 +15,7 @@ class ReferentModel():
                 points : matrix with landmark points, each row represents one point [y_1, x_1,.., y_n, x_n] (OpenCV-style mapping)
         """
         self.points = points
+        self.mean_shape = None
 
     def mean_model(self):
         """
@@ -87,6 +88,11 @@ class ReferentModel():
             collection.append(item.as_vector())
 
         self.points = np.array(collection)
+
+    def _find_angle(self, current_shape):
+        """
+            Method finds the angle between reference shape in self.mean_shape and current_shape
+        """
 
     def align(self):
         """
