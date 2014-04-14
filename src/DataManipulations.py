@@ -30,23 +30,6 @@ class DataCollector():
 
         self.points = np.array(self.points)
 
-    def render_shape(self):
-        """
-            Method displays read landmarks
-        """
-        max_y = self.points[:, 0].max()
-        min_y = self.points[:, 0].min()
-        max_x = self.points[:, 1].max()
-        min_x = self.points[:, 1].min()
-
-        img = np.zeros((int((max_y - min_y)*1.1), int((max_x - min_x)*1.1)))
-
-        for i in range(len(self.points)):
-            img[self.points[i, 0] - min_y, self.points[i, 1] - min_x] = 1
-
-        cv2.imshow('image', img)
-        cv2.waitKey(0)
-
     def render_over_image(self, input_img):
         """
             Method render a shape described with landmarks over the input image
@@ -83,9 +66,64 @@ class DataCollector():
 
     def as_matrix(self):
         """
-            return points as matrix
+            return points as matrix (height, width)
         """
         return self.points
+
+
+class Plotter():
+
+    def __init__(self):
+        """
+            Class implementing plotter functionality for visualization of landmark points
+        """
+
+    @staticmethod
+    def render_landmarks(data_collector):
+        """
+            Method visualizes landmark points in a given data_collector of type DataCollector
+        """
+
+        points = data_collector.as_matrix()
+        max_y = points[:, 0].max()
+        min_y = points[:, 0].min()
+        max_x = points[:, 1].max()
+        min_x = points[:, 1].min()
+
+        img = np.zeros((int((max_y - min_y)*1.1), int((max_x - min_x)*1.1)))
+
+        for i in range(len(points)):
+            img[points[i, 0] - min_y, points[i, 1] - min_x] = 1
+
+        cv2.imshow('Rendered shape', img)
+        cv2.waitKey(0)
+
+    @staticmethod
+    def render_over_image(data_collector, img):
+        """
+            Method render a shape described with landmarks over the input image
+
+            params:
+                data_collector = landmark points as DataCollector class
+                input_img = image to render on, loaded with OpenCV
+        """
+
+        points = data_collector.as_matrix()
+        for i in range(len(points) - 1):
+            #input_img[self.points[i, 0], self.points[i, 1], 1] = 255
+            cv2.line(img, (int(points[i, 1]), int(points[i, 0])),
+                     (int(points[i+1, 1]),  int(points[i+1, 0])), (0, 255, 0))
+
+        height = 500
+        scale = height / float(img.shape[0])
+        window_width = int(img.shape[1] * scale)
+        window_height = int(img.shape[0] * scale)
+
+        cv2.namedWindow('rendered image', cv2.WINDOW_NORMAL)
+        cv2.resizeWindow('rendered image', window_width, window_height)
+        cv2.imshow('rendered image', img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
 
 def collect_vectors(input_folder, tooth_number, dims):
