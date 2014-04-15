@@ -44,7 +44,7 @@ def example_scaling_to_unit_and_back():
     print tmpObj.points
     print "*" * 50
     tmpObj.scale_to_unit()
-    #DataManipulations.Plotter.render_landmarks(tmpObj)
+    print "centroid distance: ", tmpObj.check_distance()
     tmpObj.rescale()
     print tmpObj.points
 
@@ -57,5 +57,18 @@ def example_rotating_landmarks():
     DataManipulations.Plotter.render_landmarks(tmpObj)
 
 
-#example_rotating_landmarks()
-example_scaling_to_unit_and_back()
+def example_aligning_model():
+    res = DataManipulations.collect_vectors('../data/Landmarks/original', '1', 80)
+
+    #aligning the model
+    referent = ActiveShapeModel.ReferentModel(res)
+    referent.align()
+
+    #retrieving the mean model
+    model = referent.retrieve_mean_model()
+    model.rescale()  # the mean model is scale to the unit centroid distance
+    model.realign_to_absolute()  # move from referent shape to absolute
+    DataManipulations.Plotter.render_landmarks(model)
+
+
+example_aligning_model()

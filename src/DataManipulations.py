@@ -3,6 +3,8 @@ __author__ = 'Sebastijan'
 import cv2
 import os
 import fnmatch
+import copy
+
 import numpy as np
 
 
@@ -57,15 +59,15 @@ class DataCollector():
                 data_vector = vector of points in OpenCV mapping style [y_1, x_1, ..., y_n, x_n], numpy array
         """
         self.points = np.zeros((len(data_vector) / 2, 2))
-        self.points[:, 0] = data_vector[range(0, len(data_vector), 2)]
-        self.points[:, 1] = data_vector[range(1, len(data_vector), 2)]
+        self.points[:, 0] = copy.copy(data_vector[range(0, len(data_vector), 2)])
+        self.points[:, 1] = copy.copy(data_vector[range(1, len(data_vector), 2)])
         self._update_centroid(weights=weights)
 
     def read_points(self, points, weights=None):
         """
             Method reads point in a matrix format [[y_1, x_1], [y_2, x_2], ..., [y_n, x_n]]
         """
-        self.points = points
+        self.points = copy.copy(points)
         self._update_centroid(weights=weights)
 
     def _update_centroid(self, weights=None):
@@ -121,8 +123,20 @@ class DataCollector():
         self.scale_factor = np.power(self.scale_factor, 2)
         self.scale_factor = self.scale_factor.dot(1. / len(self.points))
         self.scale_factor = self.scale_factor.sum()
+        self.scale_factor = np.sqrt(self.scale_factor)
 
         self.points = self.points.dot(1. / self.scale_factor)
+        self._update_centroid()
+
+    def check_distance(self):
+
+        result = self.points - self.centroid
+        result = np.power(result, 2)
+        result = result.dot(1. / len(self.points))
+        result = result.sum()
+        result = np.sqrt(result)
+
+        return result
 
     def rescale(self):
         """
@@ -139,6 +153,22 @@ class DataCollector():
         rot_matrix = np.array([[np.cos(angle), np.sin(angle)], [-np.sin(angle), np.cos(angle)]])
         for ind in range(len(self.points)):
             self.points[ind, :] = self.points[ind, :].dot(rot_matrix)
+
+    def __sub__(self, other):
+        """
+            Method for subtractions of two DataCollectors
+
+            params:
+                other : DataCollector
+
+            returns:
+                self.points - other.points
+        """
+        return self.points - other.points
+
+    def realign_to_absolute(self):
+        mins = np.min(self.points, axis=0)
+        self.points = self.points - mins
 
 
 class Plotter():

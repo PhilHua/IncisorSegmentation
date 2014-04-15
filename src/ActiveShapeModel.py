@@ -1,6 +1,9 @@
 __author__ = 'Sebastijan'
 
+import copy
+
 import numpy as np
+
 import utils
 import DataManipulations
 
@@ -21,6 +24,10 @@ class ReferentModel():
         """
             Method calculates mean model from self.points
         """
+
+        if type(self.points) is type([]):
+            coll = self._convert_collection_to_matrix()
+            return np.mean(coll, axis=0)
         return np.mean(self.points, axis=0)
 
     def _calculate_distances_to_points(self):
@@ -87,12 +94,7 @@ class ReferentModel():
         for item in self.points:
             collection.append(item.as_vector())
 
-        self.points = np.array(collection)
-
-    def _find_angle(self, current_shape):
-        """
-            Method finds the angle between reference shape in self.mean_shape and current_shape
-        """
+        return np.array(collection)
 
     def align(self):
         """
@@ -108,6 +110,45 @@ class ReferentModel():
         for item in self.points:
             item.translate_to_origin()
 
-        #scale points to unit distance
+        #scaling shape to unit distance
         for item in self.points:
             item.scale_to_unit()
+            #print item.scale_factor
+
+        self.mean_shape = copy.copy(self.points[0])
+        old_mean_shape = DataManipulations.DataCollector(None)
+        old_mean_shape.read_points(np.zeros_like(self.mean_shape.points))
+
+        while utils.is_converged(old_mean_shape, self.mean_shape) is not True:
+            old_mean_shape.read_points(self.mean_shape.points)
+
+            #recalculate new mean
+            #self._convert_collection_to_matrix()
+            self.mean_shape.read_vector(self.mean_model())
+            #self._convert_matrix_to_collection()
+
+            #normalize a new mean shape
+            self.mean_shape.translate_to_origin()
+            self.mean_shape.scale_to_unit()
+
+            #realign each shape with new mean
+            for item in self.points:
+                angle = utils.rotation_alignment(self.mean_shape, item)
+                item.rotate(angle)
+
+                if item.check_distance() != 0.1:
+                    item.translate_to_origin()
+                    #item.scale_to_unit()
+                    #print item.check_distance()
+
+        #calculate mean scale factor
+        scale_factor = 0.
+        for item in self.points:
+            scale_factor += item.scale_factor
+        self.mean_shape.scale_factor = scale_factor / float(len(self.points))
+
+    def retrieve_mean_model(self):
+        return self.mean_shape
+
+    def retrieve_as_matrix(self):
+        return self._convert_collection_to_matrix()
