@@ -31,10 +31,8 @@ def rotation_alignment(referent_shape, current_shape):
     denominator = 0.
 
     for i in range(len(referent_shape.points)):
-        numerator += current_shape.points[i, 0] * referent_shape.points[i, 1] - current_shape.points[i, 1] *
-                     referent_shape.points[i, 0]
-        denominator += current_shape.points[i, 0] * referent_shape.points[i, 0] + current_shape.points[i, 1] *
-                       referent_shape.points[i, 1]
+        numerator += current_shape.points[i, 0] * referent_shape.points[i, 1] - current_shape.points[i, 1] * referent_shape.points[i, 0]
+        denominator += current_shape.points[i, 0] * referent_shape.points[i, 0] + current_shape.points[i, 1] * referent_shape.points[i, 1]
 
     return math.atan2(numerator, denominator)
 
