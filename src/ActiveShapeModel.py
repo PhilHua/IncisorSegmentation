@@ -1,6 +1,7 @@
 __author__ = 'Sebastijan'
 
 import copy
+import types
 
 import numpy as np
 
@@ -25,7 +26,8 @@ class ReferentModel():
             Method calculates mean model from self.points
         """
 
-        if type(self.points) is type([]):
+        #if type(self.points) is type([]):
+        if isinstance(self.points, types.ListType):
             coll = self._convert_collection_to_matrix()
             return np.mean(coll, axis=0)
         return np.mean(self.points, axis=0)
