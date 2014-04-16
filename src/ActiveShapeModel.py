@@ -148,7 +148,26 @@ class ReferentModel():
         self.mean_shape.scale_factor = scale_factor / float(len(self.points))
 
     def retrieve_mean_model(self):
+        """
+            Get method for mean model
+
+            returns:
+                mean model as a DataCollector
+        """
         return self.mean_shape
 
     def retrieve_as_matrix(self):
+        """
+            Method returns aligned dataset in a n_shapes x n_landmarks matrix
+        """
         return self._convert_collection_to_matrix()
+
+    def rescale_and_realign(self):
+        """
+            Method rescales every shape (after alignment each shape is unit) and translate landmarks from relative to absolute
+                        position
+        """
+
+        for item in self.points:
+            item.rescale()
+            item.realign_to_absolute()

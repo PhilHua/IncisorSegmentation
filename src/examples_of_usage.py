@@ -71,4 +71,12 @@ def example_aligning_model():
     DataManipulations.Plotter.render_landmarks(model)
 
 
-example_aligning_model()
+def example_align_model_and_visualize_shapes():
+    res = DataManipulations.collect_vectors('../data/Landmarks/original', '4', 80)
+
+    referent = ActiveShapeModel.ReferentModel(res)
+    referent.align()
+    referent.rescale_and_realign()
+
+    for shape in referent.points:
+        DataManipulations.Plotter.render_landmarks(shape)
