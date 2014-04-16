@@ -140,10 +140,15 @@ class DataCollector():
 
     def rescale(self):
         """
-            Methods rescales each landmark point to it's original distance
+            Method rescales each landmark point to it's original distance
         """
-
         self.points = self.points.dot(self.scale_factor)
+
+    def rescale_with_factor(self, factor):
+        """
+            Method rescales each landmark point with the given factor
+        """
+        self.points = self.points.dot(factor)
 
     def rotate(self, angle):
         """

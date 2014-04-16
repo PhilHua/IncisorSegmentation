@@ -171,5 +171,5 @@ class ReferentModel():
         """
 
         for item in self.points:
-            item.rescale()
+            item.rescale_with_factor(self.mean_shape.scale_factor)
             item.realign_to_absolute()
