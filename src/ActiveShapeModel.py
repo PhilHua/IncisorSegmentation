@@ -4,6 +4,7 @@ import copy
 import types
 
 import numpy as np
+from sklearn.decomposition import PCA
 
 import utils
 import DataManipulations
@@ -188,8 +189,32 @@ class VarianceModel():
             params:
                 ref_model : instance of ReferentModel, should be aligned, rescaled and realigned to an absolute position before
         """
-        self.deviation = ref_model.points
+        self.deviation = ref_model.retrieve_as_matrix()
+        self.covariance = None
+        self.pca_fitter = None
 
         for ind in range(len(self.deviation)):
-            self.deviation[ind].points = self.deviation[ind].points - ref_model.mean_shape.points
+            self.deviation[ind, :] = self.deviation[ind, :] - ref_model.mean_model()
+
+    def _covariance_matrix(self):
+        """
+            Method calculates the covariance matrix
+        """
+        self.covariance = np.cov(self.deviation, rowvar=0)
+
+    def obtain_components(self, num_comp=3):
+        """
+            Method calculates the principal components of the covariance matrix
+
+            @params:
+                num_comp: number of components to obtain
+
+        """
+        if self.covariance is None:
+            self._covariance_matrix()
+
+        self.pca_fitter = PCA(n_components=num_comp)
+        self.pca_fitter.fit(self.covariance)
+
+        return self.pca_fitter.components_, self.pca_fitter.explained_variance_ratio_
 
