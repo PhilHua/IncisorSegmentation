@@ -57,3 +57,25 @@ def is_converged(old_vector, new_vector, threshold=0.00001):
         return False
     else:
         return True
+
+
+def cvt_vector_to_points(vector, num, dim):
+    """
+        Method converts vector of [y1, x1, ..., yn, xn] to point-wise matrix
+
+        params:
+            vector:  should be 1xn numpy array
+    """
+
+    return numpy.reshape(vector, (num, dim))
+
+
+def cvt_points_to_vector(points):
+    """
+        Method converts point-wise matrix to vector of [y1, x1, ..., yn, xn]
+
+        params:
+            points : numpy matrixof points
+    """
+
+    return numpy.hstack(points)

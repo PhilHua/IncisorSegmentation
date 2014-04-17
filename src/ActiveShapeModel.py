@@ -105,7 +105,7 @@ class ReferentModel():
             Notes:
                 -- weighted mean is calculated when needed, not just arithmetic mean
         """
-        weights = self._calculate_weights()
+        #weights = self._calculate_weights()
         self._convert_matrix_to_collection()
 
         #translating points to the origin to avoid need for translation
@@ -173,3 +173,23 @@ class ReferentModel():
         for item in self.points:
             item.rescale_with_factor(self.mean_shape.scale_factor)
             item.realign_to_absolute()
+
+        #realign the mean model also
+        self.mean_shape.rescale()
+        self.mean_shape.realign_to_absolute()
+
+
+class VarianceModel():
+
+    def __init__(self, ref_model):
+        """
+            Class containing the functionalities for examining the variance of shape
+
+            params:
+                ref_model : instance of ReferentModel, should be aligned, rescaled and realigned to an absolute position before
+        """
+        self.deviation = ref_model.points
+
+        for ind in range(len(self.deviation)):
+            self.deviation[ind].points = self.deviation[ind].points - ref_model.mean_shape.points
+

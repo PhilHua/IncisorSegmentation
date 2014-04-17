@@ -197,7 +197,7 @@ class Plotter():
         img = np.zeros((int((max_y - min_y) * 1.1), int((max_x - min_x) * 1.1)))
 
         for i in range(len(points)):
-            img[points[i, 0] - min_y, points[i, 1] - min_x] = 1
+            img[int(points[i, 0] - min_y), int(points[i, 1] - min_x)] = 1
 
         cv2.imshow('Rendered shape', img)
         cv2.waitKey(0)

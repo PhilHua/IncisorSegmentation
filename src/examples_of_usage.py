@@ -63,11 +63,10 @@ def example_aligning_model():
     #aligning the model
     referent = ActiveShapeModel.ReferentModel(res)
     referent.align()
+    referent.rescale_and_realign()
 
     #retrieving the mean model
     model = referent.retrieve_mean_model()
-    model.rescale()  # the mean model is scale to the unit centroid distance
-    model.realign_to_absolute()  # move from referent shape to absolute
     DataManipulations.Plotter.render_landmarks(model)
 
 
