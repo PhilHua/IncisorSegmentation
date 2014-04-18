@@ -216,5 +216,31 @@ class VarianceModel():
         self.pca_fitter = PCA(n_components=num_comp)
         self.pca_fitter.fit(self.covariance)
 
-        return self.pca_fitter.components_, self.pca_fitter.explained_variance_ratio_
+    def get_components(self):
+        """
+            Method returns the principal components calculated wth self.obtain_components
+        """
 
+        if self.pca_fitter is None:
+            raise ValueError("Components not calculated")
+
+        return self.pca_fitter.components_
+
+    def get_variances_explained(self):
+        """
+
+        """
+
+        if self.pca_fitter is None:
+            raise ValueError("Principal components not calculated")
+
+        return self.pca_fitter.explained_variance_ratio_
+
+    def get_eigenvalues(self):
+        """
+            Method returns the eigenvalues of the covariance matrix
+        """
+
+        eigenvals = np.linalg.eigvalsh(self.covariance)
+
+        return sorted(eigenvals, reverse=True)[:len(self.pca_fitter.components_)]

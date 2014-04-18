@@ -5,13 +5,14 @@ import DataManipulations
 import ActiveShapeModel
 
 
-res = DataManipulations.collect_vectors('../data/Landmarks/original', '4', 80)
+res = DataManipulations.collect_vectors('../data/Landmarks/original', '1', 80)
 
 referent = ActiveShapeModel.ReferentModel(res)
 referent.align()
 referent.rescale_and_realign()
 
 variance = ActiveShapeModel.VarianceModel(referent)
-components, explained = variance.obtain_components()
+variance.obtain_components()
 
+print variance.get_eigenvalues()
 
