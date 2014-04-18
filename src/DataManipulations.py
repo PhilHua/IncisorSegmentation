@@ -1,10 +1,10 @@
 __author__ = 'Sebastijan'
 
-import cv2
 import os
 import fnmatch
 import copy
 
+import cv2
 import numpy as np
 
 
@@ -226,6 +226,22 @@ class Plotter():
         cv2.namedWindow('rendered image', cv2.WINDOW_NORMAL)
         cv2.resizeWindow('rendered image', window_width, window_height)
         cv2.imshow('rendered image', img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+    @staticmethod
+    def display_image(img, window_name):
+        """
+            Method display the image so that it fits the screen
+        """
+        height = 500
+        scale = height / float(img.shape[0])
+        window_width = int(img.shape[1] * scale)
+        window_height = int(img.shape[0] * scale)
+
+        cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(window_name, window_width, window_height)
+        cv2.imshow(window_name, img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 

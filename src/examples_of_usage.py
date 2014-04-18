@@ -3,46 +3,47 @@ __author__ = 'Sebastijan'
 import cv2
 import numpy
 
-import DataManipulations
+from DataManipulations import DataCollector, Plotter, collect_vectors
 import ActiveShapeModel
 import utils
+from Preprocess import Preprocessor
 
 
 def example_reading_landmarks_and_display_shape():
-    TmpObj = DataManipulations.DataCollector('../data/Landmarks/original/landmarks1-1.txt')
-    DataManipulations.Plotter.render_landmarks(TmpObj)
+    TmpObj = DataCollector('../data/Landmarks/original/landmarks1-1.txt')
+    Plotter.render_landmarks(TmpObj)
 
 
 def example_read_landmarks_and_plot_over_original_image():
-    TmpObj = DataManipulations.DataCollector('../data/Landmarks/original/landmarks1-4.txt')
+    TmpObj = DataCollector('../data/Landmarks/original/landmarks1-4.txt')
     img = cv2.imread('../data/Radiographs/01.tif')
-    DataManipulations.Plotter.render_over_image(TmpObj, img)
+    Plotter.render_over_image(TmpObj, img)
 
 
 def example_collect_landmarks_from_multiple_teeth():
-    res = DataManipulations.collect_vectors('../data/Landmarks/original', '1', 80)
+    res = collect_vectors('../data/Landmarks/original', '1', 80)
     print res
 
 
 def example_calculate_mean_image_and_display():
-    res = DataManipulations.collect_vectors('../data/Landmarks/original', '5', 80)
+    res = collect_vectors('../data/Landmarks/original', '5', 80)
     referent = ActiveShapeModel.ReferentModel(res)
-    data_coll = DataManipulations.DataCollector(None)
+    data_coll = DataCollector(None)
     res = referent.mean_model()
     data_coll.read_vector(referent.mean_model())
 
-    DataManipulations.Plotter.render_landmarks(data_coll)
+    Plotter.render_landmarks(data_coll)
 
 
 def example_translate_to_origin():
-    tmpObj = DataManipulations.DataCollector('../data/Landmarks/original/landmarks1-1.txt')
+    tmpObj = DataCollector('../data/Landmarks/original/landmarks1-1.txt')
     print numpy.mean(tmpObj.points, axis=0)
     tmpObj.translate_to_origin()
     print tmpObj.centroid
 
 
 def example_scaling_to_unit_and_back():
-    tmpObj = DataManipulations.DataCollector('../data/Landmarks/original/landmarks1-1.txt')
+    tmpObj = DataCollector('../data/Landmarks/original/landmarks1-1.txt')
     print tmpObj.points
     print "*" * 50
     tmpObj.scale_to_unit()
@@ -52,15 +53,15 @@ def example_scaling_to_unit_and_back():
 
 
 def example_rotating_landmarks():
-    tmpObj = DataManipulations.DataCollector('../data/Landmarks/original/landmarks1-1.txt')
-    DataManipulations.Plotter.render_landmarks(tmpObj)
+    tmpObj = DataCollector('../data/Landmarks/original/landmarks1-1.txt')
+    Plotter.render_landmarks(tmpObj)
 
     tmpObj.rotate(1)
-    DataManipulations.Plotter.render_landmarks(tmpObj)
+    Plotter.render_landmarks(tmpObj)
 
 
 def example_aligning_model():
-    res = DataManipulations.collect_vectors('../data/Landmarks/original', '1', 80)
+    res = collect_vectors('../data/Landmarks/original', '1', 80)
 
     #aligning the model
     referent = ActiveShapeModel.ReferentModel(res)
@@ -69,22 +70,22 @@ def example_aligning_model():
 
     #retrieving the mean model
     model = referent.retrieve_mean_model()
-    DataManipulations.Plotter.render_landmarks(model)
+    Plotter.render_landmarks(model)
 
 
 def example_align_model_and_visualize_shapes():
-    res = DataManipulations.collect_vectors('../data/Landmarks/original', '4', 80)
+    res = collect_vectors('../data/Landmarks/original', '4', 80)
 
     referent = ActiveShapeModel.ReferentModel(res)
     referent.align()
     referent.rescale_and_realign()
 
     for shape in referent.points:
-        DataManipulations.Plotter.render_landmarks(shape)
+        Plotter.render_landmarks(shape)
 
 
 def example_calculate_principal_components():
-    res = DataManipulations.collect_vectors('../data/Landmarks/original', '7', 80)
+    res = collect_vectors('../data/Landmarks/original', '7', 80)
 
     referent = ActiveShapeModel.ReferentModel(res)
     referent.align()
@@ -100,7 +101,7 @@ def example_calculate_principal_components():
 
 def example_examine_principal_components():
 
-    res = DataManipulations.collect_vectors('../data/Landmarks/original', '1', 80)
+    res = collect_vectors('../data/Landmarks/original', '1', 80)
 
     referent = ActiveShapeModel.ReferentModel(res)
     referent.align()
@@ -114,9 +115,25 @@ def example_examine_principal_components():
 
     shapes = utils.vary_component(referent.mean_shape, components.transpose(), eigenvals, 0, 10)
 
-    tmpObj = DataManipulations.DataCollector(None)
-    DataManipulations.Plotter.render_landmarks(referent.mean_shape)
+    tmpObj = DataCollector(None)
+    Plotter.render_landmarks(referent.mean_shape)
 
     for ind in range(len(shapes)):
         tmpObj.read_vector(shapes[ind, :])
-        DataManipulations.Plotter.render_landmarks(tmpObj)
+        Plotter.render_landmarks(tmpObj)
+
+
+def example_clean_image():
+    img = cv2.imread('../data/Radiographs/01.tif')
+
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img_top = Preprocessor.top_hat_transform(img)
+    img_bottom = Preprocessor.bottom_hat_transform(img)
+
+    Plotter.display_image(img, 'Original image')
+    Plotter.display_image(img_top, 'Top hat filtered')
+    Plotter.display_image(img_bottom, 'Bottom hat filtered')
+    img = cv2.add(img, img_top)
+    img = cv2.subtract(img, img_bottom)
+
+    Plotter.display_image(img, 'Result')
