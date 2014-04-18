@@ -112,7 +112,7 @@ def example_examine_principal_components():
     components = variance.get_components()
     eigenvals = variance.get_eigenvalues()
 
-    shapes = utils.vary_component(referent.mean_shape, components.transpose(), eigenvals, 2, 10)
+    shapes = utils.vary_component(referent.mean_shape, components.transpose(), eigenvals, 0, 10)
 
     tmpObj = DataManipulations.DataCollector(None)
     DataManipulations.Plotter.render_landmarks(referent.mean_shape)

@@ -228,7 +228,7 @@ class VarianceModel():
 
     def get_variances_explained(self):
         """
-
+            Method returns the variance ratios of calculated components
         """
 
         if self.pca_fitter is None:
@@ -242,5 +242,4 @@ class VarianceModel():
         """
 
         eigenvals = np.linalg.eigvalsh(self.covariance)
-
         return sorted(eigenvals, reverse=True)[:len(self.pca_fitter.components_)]
