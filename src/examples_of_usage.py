@@ -2,8 +2,10 @@ __author__ = 'Sebastijan'
 
 import cv2
 import numpy
+
 import DataManipulations
 import ActiveShapeModel
+import utils
 
 
 def example_reading_landmarks_and_display_shape():
@@ -79,3 +81,42 @@ def example_align_model_and_visualize_shapes():
 
     for shape in referent.points:
         DataManipulations.Plotter.render_landmarks(shape)
+
+
+def example_calculate_principal_components():
+    res = DataManipulations.collect_vectors('../data/Landmarks/original', '7', 80)
+
+    referent = ActiveShapeModel.ReferentModel(res)
+    referent.align()
+    referent.rescale_and_realign()
+
+    variance = ActiveShapeModel.VarianceModel(referent)
+    variance.obtain_components()
+
+    print variance.get_components()
+    print "Component variance ratio: ", variance.get_variances_explained()
+    print "Eigenvalues: ", variance.get_eigenvalues()
+
+
+def example_examine_principal_components():
+
+    res = DataManipulations.collect_vectors('../data/Landmarks/original', '1', 80)
+
+    referent = ActiveShapeModel.ReferentModel(res)
+    referent.align()
+    referent.rescale_and_realign()
+
+    variance = ActiveShapeModel.VarianceModel(referent)
+    variance.obtain_components()
+
+    components = variance.get_components()
+    eigenvals = variance.get_eigenvalues()
+
+    shapes = utils.vary_component(referent.mean_shape, components.transpose(), eigenvals, 2, 10)
+
+    tmpObj = DataManipulations.DataCollector(None)
+    DataManipulations.Plotter.render_landmarks(referent.mean_shape)
+
+    for ind in range(len(shapes)):
+        tmpObj.read_vector(shapes[ind, :])
+        DataManipulations.Plotter.render_landmarks(tmpObj)
