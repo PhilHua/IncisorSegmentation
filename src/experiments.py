@@ -6,16 +6,14 @@ from Preprocess import Preprocessor
 from DataManipulations import Plotter
 
 
-img = cv2.imread('../data/Radiographs/01.tif')
-
-img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-img_top = Preprocessor.top_hat_transform(img)
-img_bottom = Preprocessor.bottom_hat_transform(img)
-
+img = cv2.imread('../data/Radiographs/01.tif', 0)
 Plotter.display_image(img, 'Original image')
-Plotter.display_image(img_top, 'Top hat filtered')
-Plotter.display_image(img_bottom, 'Bottom hat filtered')
-img = cv2.add(img, img_top)
-img = cv2.subtract(img, img_bottom)
 
-Plotter.display_image(img, 'Result')
+dft_shift = Preprocessor.calculate_fourier(img)
+
+dft_shift = Preprocessor.high_pass_filter(dft_shift, img.shape)
+
+dft_shift = Preprocessor.low_pass_filter(dft_shift, img.shape)
+#
+img_back = Preprocessor.inverse_fourier_transform(dft_shift)
+Preprocessor.display_fourier(img_back)
