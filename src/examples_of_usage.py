@@ -85,7 +85,7 @@ def example_align_model_and_visualize_shapes():
 
 
 def example_calculate_principal_components():
-    res = collect_vectors('../data/Landmarks/original', '7', 80)
+    res = collect_vectors('../data/Landmarks/original', '4', 80)
 
     referent = ActiveShapeModel.ReferentModel(res)
     referent.align()
@@ -113,7 +113,7 @@ def example_examine_principal_components():
     components = variance.get_components()
     eigenvals = variance.get_eigenvalues()
 
-    shapes = utils.vary_component(referent.mean_shape, components.transpose(), eigenvals, 0, 10)
+    shapes = utils.vary_component(referent.mean_shape, components.transpose(), eigenvals, 1, 10)
 
     tmpObj = DataCollector(None)
     Plotter.render_landmarks(referent.mean_shape)
@@ -137,3 +137,34 @@ def example_clean_image():
     img = cv2.subtract(img, img_bottom)
 
     Plotter.display_image(img, 'Result')
+
+
+def example_using_fourier():
+    img = cv2.imread('../data/Radiographs/01.tif', 0)
+    Plotter.display_image(img, 'Original image')
+
+    dft_shift = Preprocessor.calculate_fourier(img)
+    dft_shift = Preprocessor.high_pass_filter(dft_shift, img.shape, v_offset=7, h_offset=7)
+
+    dft_shift = Preprocessor.low_pass_filter(dft_shift, img.shape, v_offset=120, h_offset=120)
+
+    img_back = Preprocessor.inverse_fourier_transform(dft_shift)
+    Preprocessor.display_fourier(img_back)
+
+    img_edges = Preprocessor.find_edges(img_back)
+    Preprocessor.display_fourier(img_edges)
+
+
+def example_normals():
+    res = collect_vectors('../data/Landmarks/original', '5', 80)
+
+    referent = ActiveShapeModel.ReferentModel(res)
+    referent.align()
+    referent.rescale_and_realign()
+
+    variance = ActiveShapeModel.VarianceModel(referent)
+    variance.obtain_components()
+
+    asm = ActiveShapeModel.ActiveShape(cv2.imread('../data/Radiographs/01.tif'), (500, 500), variance)
+    asm._calculate_normals()
+    Plotter.render_normals(asm)

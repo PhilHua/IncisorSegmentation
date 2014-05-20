@@ -246,6 +246,24 @@ class Plotter():
         cv2.destroyAllWindows()
 
     @staticmethod
+    def render_normals(active_shape):
+        """
+            The method renders the landmark points together with the
+        """
+
+        active_shape.current_shape.translate_to_reference((-100, -100))
+        points = active_shape.current_shape.as_matrix()
+        normals = active_shape.normals
+
+        img = np.zeros((500, 300, 3))
+        for i in range(len(points)):
+            cv2.line(img, (int(points[i, 1]), int(points[i, 0])), (int(points[(i+1)%40, 1]), int(points[(i+1)%40, 0])), (0, 255, 0))
+            cv2.line(img, (int(points[i, 1]), int(points[i, 0])), (int(points[i, 1]) - int(normals[i][1]), int(points[i, 0]) - int(normals[i][0])), (255, 0, 0))
+
+        cv2.imshow('Rendered shape', img)
+        cv2.waitKey(0)
+
+    @staticmethod
     def render_multiple_landmarks(matrix):
         """
             Method plots multiple landmark points to the same image

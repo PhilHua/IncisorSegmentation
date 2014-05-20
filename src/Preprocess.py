@@ -101,3 +101,10 @@ class Preprocessor():
     @staticmethod
     def to_magnitude(dft_shift):
         return 20*np.log(cv2.magnitude(dft_shift[:, :, 0], dft_shift[:, :, 1]))
+
+    @staticmethod
+    def find_edges(image):
+        """
+            Method applies the canny operator to detect edges
+        """
+        return cv2.Laplacian(image, cv2.CV_64F)

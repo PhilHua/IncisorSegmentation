@@ -192,6 +192,7 @@ class VarianceModel():
         self.deviation = ref_model.retrieve_as_matrix()
         self.covariance = None
         self.pca_fitter = None
+        self.mean_model = ref_model.retrieve_mean_model()
 
         for ind in range(len(self.deviation)):
             self.deviation[ind, :] = self.deviation[ind, :] - ref_model.mean_model()
@@ -243,3 +244,39 @@ class VarianceModel():
 
         eigenvals = np.linalg.eigvalsh(self.covariance)
         return sorted(eigenvals, reverse=True)[:len(self.pca_fitter.components_)]
+
+
+class ActiveShape():
+
+    def __init__(self, image, init_point, variance_model):
+        """
+            Class implements fitting procedure of Active shape models
+
+            @params:
+                image : image to fit the model in, openCV object
+                init_point : initial centroid for the mean model
+                variance_model : an instance of VarianceModel, with mean shape and principal components
+        """
+        self.image = image
+        self.init_point = init_point
+        self.current_shape = variance_model.mean_model
+        self.p_components = variance_model.get_components()
+        self.normals = []
+
+    def _calculate_normals(self):
+        """
+            The method calculates the normals in each point. The normal is calculated as an average between
+        """
+
+        for ind in range(len(self.current_shape.points)):
+            n1 = utils.normal(self.current_shape.points[ind-1, :], self.current_shape.points[ind, :])
+            n2 = utils.normal(self.current_shape.points[ind, :], self.current_shape.points[(ind+1) % 40, :])
+
+            self.normals.append(n1 + n2 / 2)
+
+    def plot(self):
+        """
+            Renders the current mean shape over an image
+        """
+
+        points = self.current_shape.as_matrix()

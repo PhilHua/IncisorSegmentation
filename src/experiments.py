@@ -2,18 +2,19 @@ __author__ = 'Sebastijan'
 
 import cv2
 
-from Preprocess import Preprocessor
-from DataManipulations import Plotter
+from DataManipulations import Plotter, collect_vectors
+from ActiveShapeModel import ReferentModel, VarianceModel, ActiveShape
 
+res = collect_vectors('../data/Landmarks/original', '5', 80)
 
-img = cv2.imread('../data/Radiographs/01.tif', 0)
-Plotter.display_image(img, 'Original image')
+referent = ReferentModel(res)
+referent.align()
+referent.rescale_and_realign()
 
-dft_shift = Preprocessor.calculate_fourier(img)
+variance = VarianceModel(referent)
+variance.obtain_components()
 
-dft_shift = Preprocessor.high_pass_filter(dft_shift, img.shape)
+asm = ActiveShape(cv2.imread('../data/Radiographs/01.tif'), (500, 500), variance)
+asm._calculate_normals()
+Plotter.render_normals(asm)
 
-dft_shift = Preprocessor.low_pass_filter(dft_shift, img.shape)
-#
-img_back = Preprocessor.inverse_fourier_transform(dft_shift)
-Preprocessor.display_fourier(img_back)

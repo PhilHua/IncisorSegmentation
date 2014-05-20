@@ -50,7 +50,7 @@ def is_converged(old_vector, new_vector, threshold=0.0000001):
 
     #print "new vector: ", new_vector.as_vector()
     #print "old vector: ", old_vector.as_vector()
-    print "new difference: ", maximum
+    #print "new difference: ", maximum
     #print "*" * 30
 
     #a = raw_input("Dalje?")
@@ -105,3 +105,16 @@ def vary_component(mean_model, components, eigenvalues, com_no, number_of_interp
         shapes[step_ind, :] = mean_model.as_vector() + components.dot(b).transpose()
 
     return shapes
+
+
+def normal(point_one, point_two):
+    """
+        The function calculates the normal to a line determined with point_one and point_two
+            Ax + By + C = 0
+            n = (A, B)
+
+        @params:
+            point_one, point_two : (y1, x1), (y2, x2)
+    """
+    return numpy.array([point_one[1] - point_two[1], point_two[0] - point_one[0]])
+
