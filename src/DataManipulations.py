@@ -24,6 +24,7 @@ class DataCollector():
         self._update_centroid(weights=None)
         self.scales = []
         self.scale_factor = None
+        self.old_centroid = None
 
     def _read_landmarks(self, input_file):
         """
@@ -102,6 +103,7 @@ class DataCollector():
         self.points = self.points - centroid
 
         #update_centroid
+        self.old_centroid = centroid
         self._update_centroid(weights=weights)
 
     def translate_to_reference(self, reference_centroid, weights=None):
@@ -112,7 +114,7 @@ class DataCollector():
                 reference_centroid : (1, num_dims) numpy array of centroid
         """
 
-        self.points = self.points - reference_centroid
+        self.points = self.points + reference_centroid
         self._update_centroid(weights=weights)
 
     def scale_to_unit(self):
@@ -251,7 +253,8 @@ class Plotter():
             The method renders the landmark points together with the
         """
 
-        active_shape.current_shape.translate_to_reference((-100, -100))
+        active_shape.current_shape.translate_to_origin()
+        active_shape.current_shape.translate_to_reference((250, 150))
         points = active_shape.current_shape.as_matrix()
         normals = active_shape.normals
 

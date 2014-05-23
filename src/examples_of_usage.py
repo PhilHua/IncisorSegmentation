@@ -165,6 +165,6 @@ def example_normals():
     variance = ActiveShapeModel.VarianceModel(referent)
     variance.obtain_components()
 
-    asm = ActiveShapeModel.ActiveShape(cv2.imread('../data/Radiographs/01.tif'), (500, 500), variance)
+    asm = ActiveShapeModel.ActiveShape(cv2.imread('../data/Radiographs/01.tif'), (857, 1359), variance)
     asm._calculate_normals()
     Plotter.render_normals(asm)

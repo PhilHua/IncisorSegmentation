@@ -5,6 +5,8 @@ import types
 
 import numpy as np
 from sklearn.decomposition import PCA
+import cv2
+from matplotlib import pyplot as plt
 
 import utils
 import DataManipulations
@@ -259,7 +261,10 @@ class ActiveShape():
         """
         self.image = image
         self.init_point = init_point
+        self.mean_shape = copy.copy(variance_model.mean_model)
         self.current_shape = variance_model.mean_model
+        self.current_shape.translate_to_origin()
+        self.current_shape.translate_to_reference((self.init_point[0], self.init_point[1]))
         self.p_components = variance_model.get_components()
         self.normals = []
 
@@ -267,6 +272,7 @@ class ActiveShape():
         """
             The method calculates the normals in each point. The normal is calculated as an average between
         """
+        self.normals = []
 
         for ind in range(len(self.current_shape.points)):
             n1 = utils.normal(self.current_shape.points[ind-1, :], self.current_shape.points[ind, :])
@@ -274,9 +280,70 @@ class ActiveShape():
 
             self.normals.append(n1 + n2 / 2)
 
-    def plot(self):
+    def _search_in_direction(self, start_point, direction, precision=100):
+        """
+            The method searches the edge image in the +/- given direction
+        """
+        edge_strength = 0  # ind 0 : negative direction; ind 1 : positive direction
+        edge = ()
+        points = set()
+
+        for factor in np.linspace(0, 1):
+            points.add((int(start_point[0] - factor * direction[0]), int(start_point[1] - factor * direction[1])))
+            points.add((int(start_point[0] + factor * direction[0]), int(start_point[1] + factor * direction[1])))
+
+        for item in points:
+            if self.image[item[0], item[1]] > edge_strength:
+                edge = np.array([item[0], item[1]])
+
+        return edge
+
+    def update_shape(self):
+        """
+            The method suggests the direction of a new shape by first calculating normals and searching in that direction
+        """
+        self._calculate_normals()
+        new_shape_points = np.zeros((len(self.current_shape.points), len(self.current_shape.points[0])))
+
+        for ind in range(len(self.current_shape.points)):
+            self.normals[ind] = self._search_in_direction(self.current_shape.points[ind], self.normals[ind]) - self.current_shape.points[ind]
+            new_shape_points[ind] = self._search_in_direction(self.current_shape.points[ind], self.normals[ind])
+
+        new_shape = DataManipulations.DataCollector(None)
+        new_shape.read_points(new_shape_points)
+
+        #remove translation
+        self.current_shape.translate_to_origin()
+        new_shape.translate_to_origin()
+
+        #remove scale
+        self.current_shape.scale_to_unit()
+        new_shape.scale_to_unit()
+
+        #calculate angle
+        angle = utils.rotation_alignment(new_shape.points, self.current_shape.points)
+
+    def plot(self, image):
         """
             Renders the current mean shape over an image
         """
 
+        #height = 500
+        #scale = height / float(self.image.shape[0])
+        #window_width = int(self.image.shape[1] * scale)
+        #window_height = int(self.image.shape[0] * scale)
+
         points = self.current_shape.as_matrix()
+        new_img = copy.copy(image)
+
+        for i in range(len(points)):
+            cv2.line(new_img, (int(points[i, 1]), int(points[i, 0])), (int(points[(i+1) % 40, 1]), int(points[(i+1) % 40, 0])), (0, 0, 255))
+            cv2.line(new_img, (int(points[i, 1]), int(points[i, 0])), (int(points[i, 1] - self.normals[i][1]), int(points[i, 0] - self.normals[i][0])), (0, 255, 0))
+
+        plt.imshow(new_img)
+        plt.show()
+
+        #cv2.namedWindow('Rendered shape', cv2.WINDOW_NORMAL)
+        #cv2.resizeWindow('Rendered shape', window_width, window_height)
+        #cv2.imshow('Rendered shape', new_img)
+        #cv2.waitKey(0)
