@@ -2,6 +2,7 @@ __author__ = 'Sebastijan'
 
 import copy
 import types
+import math
 
 import numpy as np
 from sklearn.decomposition import PCA
@@ -246,6 +247,98 @@ class VarianceModel():
 
         eigenvals = np.linalg.eigvalsh(self.covariance)
         return sorted(eigenvals, reverse=True)[:len(self.pca_fitter.components_)]
+
+
+class Sampler():
+
+    def __init__(self, image, k, model_points):
+        """
+            Class implements the sampling functionality for model points
+
+            @params:
+                image : image to sample from (openCV image object)
+                k : number of points for sampling for each side on a normal
+                model_points : DataCollector object
+        """
+        self.image = image
+        self.k = k
+        self.points = model_points
+        self.normals = []
+        self.samples = []
+
+    def _calculate_normals(self):
+        """
+            The method calculates the normals for each points in self.points
+        """
+        self.normals = []
+
+        for ind in range(len(self.points.points)):
+            n1 = utils.normal(self.points.points[ind-1, :], self.points.points[ind, :])
+            n2 = utils.normal(self.points.points[ind, :], self.points.points[(ind+1) % 40, :])
+
+            self.normals.append((n1 + n2)/2)
+
+    def _generate_points(self, start_point, direction):
+        """
+            The method generates the points for sampling along a normal
+
+            @params:
+                start_point : model point (2,1) array
+                direction : normal (2,1) array
+        """
+        neg_points = []
+        pos_points = []
+        starting_point = [(int(start_point[0]), int(start_point[1]))]
+        #self._calculate_normals()
+
+        ind = 1
+        while len(pos_points) < self.k:
+            new_point = (int(start_point[0] - ind * 0.02 * direction[0]), int(start_point[1] - ind * 0.02 * direction[1]))
+            if (new_point not in pos_points) and (new_point not in starting_point):
+                pos_points.append(new_point)
+            ind += 1
+
+        ind = 1
+        while len(neg_points) < self.k:
+            new_point = (int(start_point[0] + ind * 0.02 * direction[0]), int(start_point[1] + ind * 0.02 * direction[1]))
+            if (new_point not in neg_points) and (new_point not in starting_point):
+                neg_points.append(new_point)
+            ind += 1
+
+        neg_points.reverse()
+        return neg_points + starting_point + pos_points
+
+    def _sample(self, points):
+        """
+            The method samples the image from given points
+
+            @params:
+                points : a list of point tuples in (y_n, x_n) format
+        """
+
+        sample = []
+
+        for item in points:
+            sample.append(self.image[item[0], item[1]])
+
+        divnum = sum([math.fabs(x) for x in sample])
+        sample = [float(x)/divnum for x in sample]
+
+        return np.array(sample)
+
+    def sample(self):
+        """
+            The method performs a batch sampling for model points
+        """
+
+        samples = []
+        self._calculate_normals()
+
+        for ind in range(len(self.points.points)):
+            points = self._generate_points(self.points.points[ind], self.normals[ind])
+            samples.append(self._sample(points))
+
+        return np.array(samples)
 
 
 class ActiveShape():

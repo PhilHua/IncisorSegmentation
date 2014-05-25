@@ -320,3 +320,23 @@ def collect_vectors(input_folder, tooth_number, dims):
         res_matrix[i, :] = tmp_obj.as_vector()
 
     return res_matrix
+
+
+def collect_vectors_DataCollector(input_folder, tooth_number, dims):
+    """
+        Function that collects the models for tooth defined in teeth_numbers (can be multiple of them)
+
+        params:
+            input_folder : folder with landmarks files
+            tooth_number : identifier of tooth
+            dims : dimensionality of vectors (used for initialization of resulting matrix) -- 2*number_of_points
+    """
+
+    files = fnmatch.filter(os.listdir("{}/.".format(input_folder)), "*-{}.txt".format(str(tooth_number)))
+    objects = []
+    images = [x.replace('landmarks', '').split('-')[0].zfill(2) + '.tif' for x in files]
+
+    for i in range(len(files)):
+        objects.append(DataCollector("{}/{}".format(input_folder, files[i])))
+
+    return objects, images

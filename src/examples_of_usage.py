@@ -3,7 +3,7 @@ __author__ = 'Sebastijan'
 import cv2
 import numpy
 
-from DataManipulations import DataCollector, Plotter, collect_vectors
+from DataManipulations import DataCollector, Plotter, collect_vectors, collect_vectors_DataCollector
 import ActiveShapeModel
 import utils
 from Preprocess import Preprocessor
@@ -168,3 +168,21 @@ def example_normals():
     asm = ActiveShapeModel.ActiveShape(cv2.imread('../data/Radiographs/01.tif'), (857, 1359), variance)
     asm._calculate_normals()
     Plotter.render_normals(asm)
+
+
+def example_sample_around_points():
+    def preprocess(image_path):
+        img = cv2.imread(image_path, 0)
+        sobelx = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=9)
+        sobely = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=9)
+        return numpy.sqrt(sobelx**2 + sobely**2)
+
+    res1, images = collect_vectors_DataCollector('../data/Landmarks/original', '1', 80)
+    images = ['../data/Radiographs/' + x for x in images]
+
+    img = preprocess(images[0])
+    sample = ActiveShapeModel.Sampler(img, 3, res1[0])
+    out = sample.sample()
+
+    print out
+    print out.shape
