@@ -155,21 +155,6 @@ def example_using_fourier():
     Preprocessor.display_fourier(img_edges)
 
 
-def example_normals():
-    res = collect_vectors('../data/Landmarks/original', '5', 80)
-
-    referent = ActiveShapeModel.ReferentModel(res)
-    referent.align()
-    referent.rescale_and_realign()
-
-    variance = ActiveShapeModel.VarianceModel(referent)
-    variance.obtain_components()
-
-    asm = ActiveShapeModel.ActiveShape(cv2.imread('../data/Radiographs/01.tif'), (857, 1359), variance)
-    asm._calculate_normals()
-    Plotter.render_normals(asm)
-
-
 def example_sample_around_points():
     def preprocess(image_path):
         img = cv2.imread(image_path, 0)
