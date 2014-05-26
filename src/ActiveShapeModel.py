@@ -218,7 +218,7 @@ class VarianceModel():
             self._covariance_matrix()
 
         self.pca_fitter = PCA(n_components=num_comp)
-        self.pca_fitter.fit(self.covariance)
+        self.pca_fitter.fit(self.deviation)
 
     def get_components(self):
         """
@@ -339,6 +339,48 @@ class Sampler():
             samples.append(self._sample(points))
 
         return np.array(samples)
+
+
+class Profile():
+
+    def __init__(self, image_list, models, k, preprocess):
+        """
+            The class implements the functionality of profile building for each model over a training set
+
+            @params:
+                image_list : string list of image paths (image names are considered as ordered)
+                models : a list of DataCollector instances representing the models (same order as in image_list)
+                k : number of pixels to sample, from both sides of normal
+                preprocess : a function that implements the cleaning procedure for each image
+        """
+        self.images = image_list
+        self.models = models
+        self.k = k
+        self.preprocessor = preprocess
+        self.profiles = []
+        self.covariance = []
+
+    def build(self):
+        """
+            The method implements the profile building procedure
+        """
+        tmp_samples = []   # temporary samples used for calculation of mean and covariance
+        for i in range(len(self.models[0].points)):
+            tmp_samples.append([])
+
+        #extracting samples for each image
+        for ind in range(len(self.images)):
+            sampler = Sampler(self.preprocessor(self.images[ind]), self.k, self.models[ind])
+            samples = sampler.sample()
+
+            for i in range(len(samples)):
+                tmp_samples[i].append(samples[i, :])
+
+        #calculate mean and covariance
+        for ind in range(len(tmp_samples)):
+            tmp_array = np.array(tmp_samples[ind])
+            self.profiles.append(np.mean(tmp_array, axis=0))
+            self.covariance.append(np.cov(tmp_array, rowvar=0))
 
 
 class ActiveShape():

@@ -186,3 +186,23 @@ def example_sample_around_points():
 
     print out
     print out.shape
+
+
+def example_build_intensity_profile():
+    def preprocess(image_path):
+        img = cv2.imread(image_path, 0)
+        sobelx = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=9)
+        sobely = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=9)
+        return numpy.sqrt(sobelx**2 + sobely**2)
+    res1, images = collect_vectors_DataCollector('../data/Landmarks/original', '1', 80)
+    images = ['../data/Radiographs/' + x for x in images]
+
+    #img = preprocess(images[0])
+    #sample = Sampler(img, 3, res1[0])
+    #out = sample.sample()
+
+    profile = ActiveShapeModel.Profile(images, res1, 3, preprocess)
+    profile.build()
+
+    for item in profile.profiles:
+        print item
